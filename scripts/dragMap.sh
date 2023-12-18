@@ -5,37 +5,6 @@
 # Versión : 2.0
 
 
-# Install and config conda if do not exist 
-if ! command -v conda &> /dev/null; then
-    echo "Installing Miniconda..."
-    mkdir -p ~/miniconda3
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh
-    bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
-    rm -rf ~/miniconda3/miniconda.sh
-
-    echo "Initializing conda for bash and zsh..."
-    ~/miniconda3/bin/conda init bash
-    ~/miniconda3/bin/conda init zsh
-
-    echo "Updating PATH..."
-    export PATH=$PATH:~/miniconda3/condabin/
-    export PATH=$PATH:~/miniconda3/pkgs/bwa-meme-1.0.6-hdcf5f25_2/bin/
-
-    echo "Miniconda installed and configured successfully."
-else
-    echo "Miniconda is already installed. Skipping installation."
-fi
-
-# Install dragmap with conda if not already installed
-if ! conda list dragmap &> /dev/null; then
-    echo "Installing dragmap..."
-    conda install -c conda-forge -c bioconda dragmap
-
-    echo "dragmap installed successfully."
-else
-    echo "dragmap is already installed. Skipping installation."
-fi
-
 
 # Define variables
 

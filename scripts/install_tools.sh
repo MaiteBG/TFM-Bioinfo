@@ -8,45 +8,18 @@ tools_dir="$HOME/tools"
 mkdir -p $tools_dir
 cd $tools_dir
 
-# Function to check if a command is available
+# Functio para comprobar si comando existe
 command_exists() {
   command -v "$1" >/dev/null 2>&1
 }
 
 
-# Verificar si el SRA Toolkit está instalado
-if ! command_exists "prefetch"; then
-    echo "SRA Toolkit no está instalado. Iniciando la instalación en $tools_dir..." 
-    # Descargar e instalar SRA Toolkit
-    echo pwd
-    wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/current/sratoolkit.current-centos_linux64.tar.gz
-    tar -xzf sratoolkit.current-centos_linux64.tar.gz
-    export PATH=$PATH:$tools_dir/sratoolkit.current-centos_linux64/bin
-    
-    echo "SRA Toolkit instalado correctamente."  
-
-fi
-
-# Verificar si FastQC está instalado
-if ! command_exists "fastqc" ; then
-    echo "FastQC no está instalado. Iniciando la instalación en $tools_dir..."
-    
-    # Descargar e instalar FastQC
-    wget https://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.9.zip
-    unzip fastqc_v0.11.9.zip
-    chmod +x FastQC/fastqc
-    export PATH=$PATH:$tools_dir/FastQC
-    
-    echo "FastQC instalado correctamente."
-
-fi
-
-
+#### Conda como medio para install y compilar: bedtools, samtools, bwa-meme y dragmap ####
 # Verificar si conda está instalado
 if ! command_exists "conda"; then
     echo "Installing Miniconda..."
     mkdir -p $tools_dir/miniconda3
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O $tools_dir/miniconda3/miniconda.sh
+    wget https://repo.anaconda. com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O $tools_dir/miniconda3/miniconda.sh
     bash $tools_dir/miniconda3/miniconda.sh -b -u -p $tools_dir/miniconda3
     rm -rf $tools_dir/miniconda3/miniconda.sh
 
@@ -63,37 +36,42 @@ else
     echo "Miniconda is already installed. Skipping installation."
 fi
 
-# Function to install a package with conda if not already installed
+# Function to install a package from bioconda chanel with conda if not already installed
 install_with_conda() {
   if ! command_exists "$1"; then
     echo "Installing $1 with conda..."
-    conda install "$1"
+    conda install -c bioconda "$1"
   else
     echo "$1 is already installed. Skipping installation."
   fi
 }
 
-# Check and install dependencies
+# Instalar paquetes a través de conda
+install_with_conda "sra-tools"
+install_with_conda "fastqc"
 install_with_conda  "bedtools"
 install_with_conda "samtools"
 install_with_conda "bwa-meme"
 install_with_conda "dragmap"
+install_with_conda "minimap2"
 
-if ! command_exists "git"; then
-    sudo apt install git
-fi
 
-# Function to downland git reposirtoty if not already installed
-downland_with_git() {
-  if ! command_exists "$1"; then
-    echo "Installing $1 with ..."
-    git clone $2 $tools_dir/$1
-  else
-    echo "$1 is already installed. Skipping installation."
-  fi
-}
+# Install varaint callers
 
-downland_with_git "minimap2" "https://github.com/lh3/minimap2"
+sudo apt -y update
+sudo apt-get -y install docker.io
+
+# Deepvaraint
+DEEPVAR_VERSION="1.6.0"
+sudo docker pull google/deepvariant:"${DEEPVAR_VERSION}"
+
+# Install gatk
+#GATK
+GATK_VERSION="4.2.3.0"
+sudo docker pull broadinstitute/gatk:"${GATK_VERSION}"
+
+
+
 
 
 
