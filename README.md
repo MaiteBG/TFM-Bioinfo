@@ -6,4 +6,4 @@ Repositorio GitHub de los scripts usados y arichivos utitlizados para el trabajo
 * **Turtor del TF**: Guerau Fernández Isern
 * **Profesor responsable de la asigantura (PRA)** : David Merino Arranz
 * **Área de trabajo**: Análisis de datos ómicos
-* **Idioma del trabajo**: Castellando
+* **Idioma del trabajo**: Castellano
