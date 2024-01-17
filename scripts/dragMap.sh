@@ -1,31 +1,38 @@
 #! /bin/bash
-# Descripción: Script para descagar y configura el entono de ejecución en caso de no estar configurado y ejecuta la busqueda para DragMap
+# Descripción: Ejecutar dragMap y recoger métricas de tiempo y memoria
 # Autor: Maite Bernaus (maite.bernaus@gmail.com)
-# Fecha 16/11/2023
-# Versión : 2.0
+# Fecha 26/11/2023
+# Versión : 3.0
 
 
 
 # Define variables
-
 TFM_DIR=./
 RESULTS_DIR=${TFM_DIR}results/dragMap/
+
+LOG_FILE=${RESULTS_DIR}log.txt
+METRICS_FILE=${RESULTS_DIR}metrics.txt
+
 GENOME_FILE=${TFM_DIR}T2T-CHM13v2.0_genome/chr21.fasta
 FASTQ_DIR=${TFM_DIR}GIAB/
 R1_FASTQ=${FASTQ_DIR}SRR2052337_1.fastq.gz
 R2_FASTQ=${FASTQ_DIR}SRR2052337_2.fastq.gz
 
+# Crear el directorio de resultados
+mkdir -p $RESULTS_DIR
+
+# Etiqueta para la construcción de las tablas hash
+echo "### Construcción de las tablas hash" >> $LOG_FILE
+{ TIME_RESULT=$( /usr/bin/time -f "%e %M" dragen-os --build-hash-table true --ht-reference $GENOME_FILE --output-directory ${TFM_DIR}T2T-CHM13v2.0_genome/ 2>&1 ); } 2>&1
+echo "$TIME_RESULT" >> $LOG_FILE
 
 
-# Build hashtables
-# We recommend using at least 8 threads
-#dragen-os --build-hash-table true --ht-reference $GENOME_FILE  --output-directory ${TFM_DIR}T2T-CHM13v2.0_genome/
-
-# Run code below to train P-RMI, suffix array is required which is generated in index build code
-# Takes about 15 minutes for the human genome with a single thread
-#build_rmis_dna.sh $GENOME_FILE
-
-# Run dragmap
-dragen-os -r ${TFM_DIR}T2T-CHM13v2.0_genome/ -1 $R1_FASTQ -2 $R2_FASTQ >  output_dragmap.sam
+# Etiqueta para el alineamiento con dragmap
+echo "### Alineamiento con dragmap" >> $LOG_FILE
+# Realizar el alineamiento con dragmap
+{ TIME_RESULT=$( /usr/bin/time -f "%e %M" dragen-os -r ${TFM_DIR}T2T-CHM13v2.0_genome/ -1 $R1_FASTQ -2 $R2_FASTQ > ${RESULTS_DIR}output_dragmap.sam 2>&1 ); } 2>&1
+echo "$TIME_RESULT" >> $LOG_FILE
 
 
+
+${TFM_DIR}/scripts/getSummary.sh $LOG_FILE $METRICS_FILE

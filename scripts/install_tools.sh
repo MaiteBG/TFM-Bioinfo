@@ -19,7 +19,7 @@ command_exists() {
 if ! command_exists "conda"; then
     echo "Installing Miniconda..."
     mkdir -p $tools_dir/miniconda3
-    wget https://repo.anaconda. com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O $tools_dir/miniconda3/miniconda.sh
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O $tools_dir/miniconda3/miniconda.sh
     bash $tools_dir/miniconda3/miniconda.sh -b -u -p $tools_dir/miniconda3
     rm -rf $tools_dir/miniconda3/miniconda.sh
 
@@ -29,7 +29,6 @@ if ! command_exists "conda"; then
 
     echo "Updating PATH..."
     export PATH=$PATH:$tools_dir/miniconda3/condabin/
-    export PATH=$PATH:$tools_dir/miniconda3/pkgs/bwa-meme-1.0.6-hdcf5f25_2/bin/
 
     echo "Miniconda installed and configured successfully."
 else

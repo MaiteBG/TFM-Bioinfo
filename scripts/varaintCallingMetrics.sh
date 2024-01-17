@@ -1,13 +1,13 @@
-#! /bin/bash
-# Descripción: Ejecuta varaint caller con deepvariant a traves de un docker
+#!/bin/bash
+# Descripción:
 # Autor: Maite Bernaus (maite.bernaus@gmail.com)
-# Fecha 10/12/2023
+# Fecha 27/12/2023
 # Versión : 1.0
 
 
 ALGORITHM_DIR=$1
-BIN_VERSION="1.6.0"
-REF_PATH="T2T-CHM13v2.0_genome/chr21.fasta"
+
+REF_PATH="/chain_and_TP/chr21_HG38.fasta"
 DATA_DIR="/home/maitebg/Escritorio/TFM"
 
 
@@ -24,16 +24,21 @@ if [ ! -d "${DATA_DIR}/results/${ALGORITHM_DIR}" ] || [ -z "$(ls -A ${DATA_DIR}/
   exit 2
 fi
 
-sudo docker run \
+
+sudo docker pull pkrusche/hap.py
+
+
+sudo docker run   \
   -v "${DATA_DIR}":"/data" \
-  -w /data \
-  google/deepvariant:"${BIN_VERSION}" \
-  /opt/deepvariant/bin/run_deepvariant \
-  --model_type=WGS \
-  --ref="${REF_PATH}" \
-  --reads="results/${ALGORITHM_DIR}/output.bam" \
-  --output_vcf="results/${ALGORITHM_DIR}/output.vcf.gz" \
-  --output_gvcf="results/${ALGORITHM_DIR}/output.g.vcf.gz" \
-  --intermediate_results_dir="results/${ALGORITHM_DIR}/intermediate_results_dir" \
-  --num_shards=1
+  -e HGREF=/data${REF_PATH} \
+  pkrusche/hap.py /opt/hap.py/bin/hap.py \
+  /data/chain_and_TP/chr21_TP_norm.vcf.gz\
+   /data/results/${ALGORITHM_DIR}/output_after_chain.vcf.gz \
+  -f /data/chain_and_TP/chr21.bed.gz \
+  -o /data/results/${ALGORITHM_DIR}/happy.output 
+ 
+
+
+
+
 
